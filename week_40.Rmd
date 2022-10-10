@@ -1,0 +1,61 @@
+---
+title: "week_40"
+author: "Isabella Bicalho Frazeto e Marília Melo Favalesso "
+date: "2022-10-10"
+output: html_document
+---
+
+## Isabella - Correlação de variáveis 
+
+
+```{r}
+
+library(dplyr)
+library(ggplot2)
+tuesdata <- tidytuesdayR::tt_load(2022, week = 40)
+product_hunt <- tuesdata$product_hunt
+
+
+count_hunters <- product_hunt %>%
+                    count(hunter) %>% 
+                    mutate(
+                      hunter_rank = rank(n, ties.method = 'min')
+                    )
+
+
+full_table <- left_join(product_hunt, count_hunters, by='hunter')
+```
+
+#### Hunter rank x Upvotes
+
+```{r}
+
+corr_upvotes_hunter_rank <- cor.test(x=full_table$upvotes, y=full_table$hunter_rank, method = 'kendall')
+corr_upvotes_hunter_rank
+```
+
+
+#### Product ranking x Hunter rank
+```{r}
+corr_product_hunter_rank <- cor.test(x=full_table$product_ranking, y=full_table$hunter_rank, method = 'kendall')
+corr_product_hunter_rank
+```
+
+
+
+## Marilia - Word Cloud
+
+
+```{r}
+library("wordcloud2")
+library("stringr")
+
+product_hunt <- read.csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-10-04/product_hunt.csv')
+
+str_extract_all(product_hunt$category_tags,  boundary("word")) %>%
+  unlist() %>%
+  table() %>%
+  data.frame() %>%
+  wordcloud2(size = 1.6)
+```
+
